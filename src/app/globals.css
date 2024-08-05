@@ -3,31 +3,102 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+/* styles/globals.css */
+.custom-radio {
+  position: relative;
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+.custom-radio input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+.custom-radio input[type="radio"] + span {
+  position: relative;
+  cursor: pointer;
+  padding-left: 30px;
+  display: flex;
+  align-items: center;
 }
+
+.custom-radio input[type="radio"] + span:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #949494;
+  border-radius: 50%;
+  background: white;
+}
+
+.custom-radio input[type="radio"]:checked + span:after {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  background: #5b5b5b;
+  border-radius: 50%;
+}
+
+.custom-checkbox {
+  position: relative;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.custom-checkbox input[type="checkbox"] + span {
+  position: relative;
+  cursor: pointer;
+  padding-left: 30px;
+  display: flex;
+  align-items: center;
+}
+
+.custom-checkbox input[type="checkbox"] + span:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid #949494;
+  border-radius: 4px;
+  background: white;
+}
+
+.custom-checkbox input[type="checkbox"]:checked + span:after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 12px;
+  height: 12px;
+  background: #5b5b5b;
+  border-radius: 2px;
+}
+
+.custom-shadow {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05), 0 -2px 4px rgba(0, 0, 0, 0.05), 2px 0 4px rgba(0, 0, 0, 0.05), -2px 0 4px rgba(0, 0, 0, 0.05);
+}
+
