@@ -186,7 +186,7 @@ export default function Home() {
         <Image src="/logo.svg" alt="logo" width={150} height={80} />
       </div>
 
-      <div className="md:w-[80%] w-[95%] mt-20">
+      <div className="md:w-[80%] w-[95%] max-w-[1050px] mt-20">
         <div className="text-4xl font-semibold">
           <div>REABERTURA</div>
           <div>SMART FIT</div>
