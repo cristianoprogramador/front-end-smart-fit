@@ -4,7 +4,9 @@
 
 ## Preview
 
-Colocar Foto
+![image](https://github.com/user-attachments/assets/3733accb-d4e1-4228-bf4f-6327a61aeb8f)
+![image](https://github.com/user-attachments/assets/ea113750-8351-4b3a-8660-8e174079f431)
+
 
 ## Sobre o Projeto
 
