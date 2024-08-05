@@ -74,4 +74,4 @@ Este projeto foi desenvolvido como parte de um desafio técnico para a posição
 ## Contato
 
 - GitHub: [cristianoprogramador](https://github.com/cristianoprogramador)
-- Email: [seuemail@dominio.com](mailto:seuemail@dominio.com)
+- LinkedIn: [Cristiano](https://www.linkedin.com/in/cristiano-pereira-da-silva-bb991a124/)
