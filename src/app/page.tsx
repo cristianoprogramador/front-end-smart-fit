@@ -1,7 +1,9 @@
 "use client";
 
+import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 import Image from "next/image";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
 interface Schedule {
   weekdays: string;
@@ -88,33 +90,26 @@ const getImageSrc = (type: string, value: string) => {
 };
 
 export default function Home() {
-  const [locations, setLocations] = useState<Location[]>([]);
   const [visibleLocations, setVisibleLocations] = useState<Location[]>([]);
   const [selectedPeriod, setSelectedPeriod] = useState<string | null>(null);
   const [showClosedUnits, setShowClosedUnits] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-  useEffect(() => {
-    const fetchLocations = async () => {
-      try {
-        const response = await fetch(
-          "https://test-frontend-developer.s3.amazonaws.com/data/locations.json"
-        );
-        const data = await response.json();
-        const filteredLocations = data.locations.filter(
-          (location: { opened: any }) => location.opened
-        );
-        setLocations(data.locations);
-        setVisibleLocations(filteredLocations);
-      } catch (error) {
-        console.error("Failed to fetch locations:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchLocations();
-  }, []);
+  const fetchLocations = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(
+        "https://test-frontend-developer.s3.amazonaws.com/data/locations.json"
+      );
+      const data = await response.json();
+      return data.locations;
+    } catch (error) {
+      console.error("Failed to fetch locations:", error);
+      return [];
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const isLocationOpenInPeriod = (location: Location, period: string) => {
     const { time } = periods.find((p) => p.value === period) || { time: "" };
@@ -139,18 +134,19 @@ export default function Home() {
     });
   };
 
-  const applyFilter = () => {
+  const applyFilter = async () => {
+    const locations = await fetchLocations();
     let filteredLocations = locations;
 
     if (selectedPeriod) {
-      filteredLocations = filteredLocations.filter((location) =>
+      filteredLocations = filteredLocations.filter((location: Location) =>
         isLocationOpenInPeriod(location, selectedPeriod)
       );
     }
 
     if (!showClosedUnits) {
       filteredLocations = filteredLocations.filter(
-        (location) => location.opened
+        (location: { opened: any }) => location.opened
       );
     }
 
@@ -166,25 +162,13 @@ export default function Home() {
   };
 
   const handleClearFilter = () => {
-    console.log("Cade");
     setSelectedPeriod(null);
     setShowClosedUnits(false);
-    setVisibleLocations(locations);
   };
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Loading...</p>
-      </div>
-    );
-  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between">
-      <div className="bg-black h-24 w-full flex justify-center items-center">
-        <Image src="/logo.svg" alt="logo" width={150} height={80} />
-      </div>
+      <Header />
 
       <div className="md:w-[80%] w-[95%] max-w-[1050px] mt-20">
         <div className="text-4xl font-semibold">
@@ -293,94 +277,99 @@ export default function Home() {
           ))}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 mb-20">
-          {visibleLocations.map((location, index) => {
-            const isOpen = location.opened === true ? "Aberto" : "Fechado";
-            return (
-              <div
-                className="bg-gray-100 p-3 flex flex-col justify-start custom-shadow rounded"
-                key={index}
-              >
-                <div
-                  className={`font-semibold ${
-                    isOpen === "Aberto" ? "text-[#2FC022]" : "text-[#dc0a17]"
-                  }`}
-                >
-                  {isOpen}
-                </div>
-                <div className="text-2xl font-semibold">{location.title}</div>
-                <div
-                  className="mt-2 text-gray-500"
-                  dangerouslySetInnerHTML={{ __html: location.content }}
-                />
-                {"opened" in location ? (
-                  <>
-                    <div className="w-full h-[2px] bg-gray-200 my-3" />
-                    <div className="flex flex-row gap-2 justify-around items-center">
-                      <Image
-                        src={`/${getImageSrc("mask", location.mask)}.png`}
-                        alt="Mask status"
-                        width={50}
-                        height={80}
-                      />
-                      <Image
-                        src={`/${getImageSrc("towel", location.towel)}.png`}
-                        alt="Towel status"
-                        width={50}
-                        height={80}
-                      />
-                      <Image
-                        src={`/${getImageSrc(
-                          "fountain",
-                          location.fountain
-                        )}.png`}
-                        alt="Fountain status"
-                        width={50}
-                        height={80}
-                      />
-                      <Image
-                        src={`/${getImageSrc(
-                          "locker_room",
-                          location.locker_room
-                        )}.png`}
-                        alt="Locker room status"
-                        width={50}
-                        height={80}
-                      />
+        {isLoading === true ? (
+          <div className="flex w-full h-full items-center justify-center">
+            <p>Carregando...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mt-10 mb-20">
+            <>
+              {visibleLocations.map((location, index) => {
+                const isOpen = location.opened === true ? "Aberto" : "Fechado";
+                return (
+                  <div
+                    className="bg-gray-100 p-3 flex flex-col justify-start custom-shadow rounded"
+                    key={index}
+                  >
+                    <div
+                      className={`font-semibold ${
+                        isOpen === "Aberto"
+                          ? "text-[#2FC022]"
+                          : "text-[#dc0a17]"
+                      }`}
+                    >
+                      {isOpen}
                     </div>
-                    <div className="grid grid-cols-2 gap-3 mt-4">
-                      {location.schedules?.map((schedule, index) => {
-                        return (
-                          <div key={index} className="flex flex-col gap-1">
-                            <div className="font-semibold text-xl">
-                              {schedule.weekdays}
-                            </div>
-                            <div className="text-sm">{schedule.hour}</div>
-                          </div>
-                        );
-                      })}
+                    <div className="text-2xl font-semibold">
+                      {location.title}
                     </div>
-                  </>
-                ) : (
-                  <div className="mt-2 text-gray-500">
-                    {location.street} {location.region} {location.city_name}{" "}
-                    {location.state_name} {location.uf}
+                    <div
+                      className="mt-2 text-gray-500"
+                      dangerouslySetInnerHTML={{ __html: location.content }}
+                    />
+                    {"opened" in location ? (
+                      <>
+                        <div className="w-full h-[2px] bg-gray-200 my-3" />
+                        <div className="flex flex-row gap-2 justify-around items-center">
+                          <Image
+                            src={`/${getImageSrc("mask", location.mask)}.png`}
+                            alt="Mask status"
+                            width={50}
+                            height={80}
+                          />
+                          <Image
+                            src={`/${getImageSrc("towel", location.towel)}.png`}
+                            alt="Towel status"
+                            width={50}
+                            height={80}
+                          />
+                          <Image
+                            src={`/${getImageSrc(
+                              "fountain",
+                              location.fountain
+                            )}.png`}
+                            alt="Fountain status"
+                            width={50}
+                            height={80}
+                          />
+                          <Image
+                            src={`/${getImageSrc(
+                              "locker_room",
+                              location.locker_room
+                            )}.png`}
+                            alt="Locker room status"
+                            width={50}
+                            height={80}
+                          />
+                        </div>
+                        <div className="grid grid-cols-2 gap-3 mt-4">
+                          {location.schedules?.map((schedule, index) => {
+                            return (
+                              <div key={index} className="flex flex-col gap-1">
+                                <div className="font-semibold text-xl">
+                                  {schedule.weekdays}
+                                </div>
+                                <div className="text-sm">{schedule.hour}</div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="mt-2 text-gray-500">
+                        {location.street} {location.region} {location.city_name}{" "}
+                        {location.state_name} {location.uf}
+                      </div>
+                    )}
                   </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
+                );
+              })}
+            </>
+          </div>
+        )}
       </div>
 
-      <div className="bg-[#333333] h-52 w-full flex flex-col gap-4 justify-center items-center">
-        <div>
-          <Image src="/logo.svg" alt="logo" width={100} height={80} />
-        </div>
-        <div className="text-white mb-10">
-          Todos os direitos reservados - {new Date().getFullYear()}
-        </div>
-      </div>
+      <Footer />
     </main>
   );
 }
